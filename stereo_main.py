@@ -12,8 +12,9 @@ import time
 
 '''Global Variables '''
 
-PATH_L = r'L_stream'
-PATH_R = r'R_stream'
+OUTPUT_PATH = 'output'
+PATH_L = f'{OUTPUT_PATH}/L'
+PATH_R = f'{OUTPUT_PATH}/R'
 PATH_CALIB = r'Calibration_Files'
 useStream = 1
 
@@ -40,8 +41,8 @@ undistL = np.loadtxt(join(PATH_CALIB, 'umapL.txt'), dtype=np.float32)
 rectifL = np.loadtxt(join(PATH_CALIB, 'rmapL.txt'), dtype=np.float32)
 undistR = np.loadtxt(join(PATH_CALIB, 'umapR.txt'), dtype=np.float32)
 rectifR = np.loadtxt(join(PATH_CALIB, 'rmapR.txt'), dtype=np.float32)
-roiL = np.loadtxt(join(PATH_CALIB, 'ROIL.txt'), dtype=np.int)
-roiR = np.loadtxt(join(PATH_CALIB, 'ROIR.txt'), dtype=np.int)
+roiL = np.loadtxt(join(PATH_CALIB, 'ROIL.txt')).astype(np.int64)
+roiR = np.loadtxt(join(PATH_CALIB, 'ROIR.txt')).astype(np.int64)
 Q = np.loadtxt(join(PATH_CALIB, 'Q.txt'), dtype=np.float32)
 #R = np.loadtxt(join(PATH_CALIB, 'Rtn.txt'), dtype=np.float32)
 #T = np.loadtxt(join(PATH_CALIB, 'Trnsl.txt'), dtype=np.float32)
@@ -56,7 +57,7 @@ DL = np.loadtxt(join(PATH_CALIB, 'DcL.txt'), dtype=np.float32)
 
 def main():
     streamFrames = range(50, 105 + 1)
-    imgPairId = '55.jpg'
+    imgPairId = '55.png'
 
     if not (isfile(join(PATH_L, imgPairId)) and isfile(join(PATH_R, imgPairId))):
         print('Image', imgPairId, 'not found')
@@ -68,7 +69,7 @@ def main():
     if useStream:
         ''' Loop & update figures through image stream ''' 
         for frameId in streamFrames:
-            fname = str(frameId) + '.jpg'
+            fname = str(frameId) + '.png'
             compute_disparity(fname, params)
             plt.pause(0.2)
     else:
@@ -84,16 +85,16 @@ def rescaleROI(src, roi):
 
 def compute_disparity(imgId, params):
     imgL = cv.imread(join(PATH_L, imgId))
-    imgIdR = int(imgId.split('.')[0]) + 1       # Offset 1-frame delay from L -> R
-    imgIdR = str(imgIdR) + '.jpg'
-    imgR = cv.imread(join(PATH_R, imgIdR))
-    #print(imgL.dtype)
+    imgR = cv.imread(join(PATH_R, imgId))
+    
+    # imgL = cv.remap(imgL, undistL, rectifL, cv.INTER_LINEAR)
+    # imgR = cv.remap(imgR, undistR, rectifR, cv.INTER_LINEAR)
+    
+    # imgL = rescaleROI(imgL, roiL)
+    # imgR = rescaleROI(imgR, roiR)
 
-    imgL = cv.remap(imgL, undistL, rectifL, cv.INTER_LINEAR)
-    imgR = cv.remap(imgR, undistR, rectifR, cv.INTER_LINEAR)
-
-    imgL = rescaleROI(imgL, roiL)
-    imgR = rescaleROI(imgR, roiR)
+    # print(f'imgL: \n {imgL}')
+    # print(f'imgR: \n {imgR}')
 
     if imgL.shape != imgR.shape:
         print('L.shape != R.shape: {} != {}'.format(imgL.shape, imgR.shape))
@@ -231,6 +232,9 @@ def find_path(imgId, nDisp, points3d, disparityMap, cost_sgbm):
     yworld = np.geomspace(10,13, num=len(path), dtype=np.float32)
     #yworld = np.flip(yworld)
     # yworld = yy[yrange, coords[:,0]]
+
+    print(f'\n xx: \n {xx} \n yrnage: \n {yrange} \n coords: \n {coords} \n')
+
     xworld = xx[yrange, coords[:,0]]
     zworld = np.array([zp for _, zp in path], dtype=np.float32)
     zworld = np.interp(zworld, [0, np.amax(zworld)], [25, nDisp])
@@ -322,4 +326,4 @@ def display_disparity(origImg, dispRaw, dispWLS, imgName, paramsVals):
     plt.show()
 
 
-main()
+if __name__ == '__main__': main()

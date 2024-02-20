@@ -11,6 +11,9 @@ opencv-python = "^4.9.0.80"
 opencv-contrib-python = "^4.9.0.80"
 glob2 = "^0.7"
 reindent = "^3.5.1"
+pytest-shutil = "^1.7.0"
+matplotlib = "^3.8.3"
+pathfinding = "^1.0.9"
 
 
 [build-system]

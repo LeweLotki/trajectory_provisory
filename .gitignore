@@ -1,5 +1,6 @@
-images/
+images/*
 poetry.lock
 *.png
 *.jpg
 *.vim
+*.swp

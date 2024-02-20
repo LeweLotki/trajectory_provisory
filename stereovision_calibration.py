@@ -135,7 +135,7 @@ undistL, rectifL = cv.initUndistortRectifyMap(newCameraMatrixL, distL, rectL, pr
 undistR, rectifR = cv.initUndistortRectifyMap(newCameraMatrixR, distR, rectR, projMatrixR, grayR.shape[::-1], cv.CV_32FC1)
 
 print("Saving parameters!")
-cv_file = cv.FileStorage('stereoMap.xml', cv.FILE_STORAGE_WRITE)
+cv_file = cv.FileStorage('Map.xml', cv.FILE_STORAGE_WRITE)
 
 cv_file.write('stereoMapL_x',stereoMapL[0])
 cv_file.write('stereoMapL_y',stereoMapL[1])
