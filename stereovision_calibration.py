@@ -1,7 +1,40 @@
 import numpy as np
 import cv2 as cv
 import glob
+from os import listdir, mkdir
+from os.path import join, isdir
 
+def write_single_params():
+
+    ''' Write parameters to .txt files '''
+    output_dir = r'Calibration_Files'
+    prompt = input('Save parameters to "{}\\"? (y/n): '.format(output_dir))
+
+    if (prompt == 'y'):
+        if not isdir(output_dir):
+            mkdir(output_dir)
+        # np.savetxt(r'Calibration_Files\C1.txt', C1, fmt='%.5e')   # identical to CL
+        # np.savetxt(r'Calibration_Files\D1.txt', D1, fmt='%.5e')   # identical to DL
+        np.savetxt(join(output_dir, 'Q.txt'), Q, fmt='%.5e')
+        # np.savetxt(join(output_dir, 'FundMat.txt'), F, fmt='%.5e')
+        np.savetxt(join(output_dir, 'CmL.txt'), newCameraMatrixL, fmt='%.5e')
+        np.savetxt(join(output_dir, 'CmR.txt'), newCameraMatrixR, fmt='%.5e')
+        np.savetxt(join(output_dir, 'DcL.txt'), distL, fmt='%.5e')
+        np.savetxt(join(output_dir, 'DcR.txt'), distR, fmt='%.5e')
+        np.savetxt(join(output_dir, 'Rtn.txt'), rot, fmt='%.5e')
+        np.savetxt(join(output_dir, 'Trnsl.txt'), trans, fmt='%.5e')
+        # np.savetxt(join(output_dir, 'RtnL.txt'), R1, fmt='%.5e')  # Contains 'n' estimate arrays from 'n' images
+        # np.savetxt(join(output_dir, 'TrnslL.txt'), T1, fmt='%.5e')
+        np.savetxt(join(output_dir, 'RectifL.txt'), rectL, fmt='%.5e')
+        np.savetxt(join(output_dir, 'ProjL.txt'), projMatrixL, fmt='%.5e')
+        np.savetxt(join(output_dir, 'ProjR.txt'), projMatrixR, fmt='%.5e')
+        np.savetxt(join(output_dir, 'umapL.txt'), undistL, fmt='%.5e')
+        np.savetxt(join(output_dir, 'rmapL.txt'), rectifL, fmt='%.5e')
+        np.savetxt(join(output_dir, 'umapR.txt'), undistR, fmt='%.5e')
+        np.savetxt(join(output_dir, 'rmapR.txt'), rectifR, fmt='%.5e')
+        np.savetxt(join(output_dir, 'ROIL.txt'), roi_L, fmt='%.5e')
+        np.savetxt(join(output_dir, 'ROIR.txt'), roi_R, fmt='%.5e')
+        print(f'Parameters saved to folder: [{output_dir}]')
 
 ################ FIND CHESSBOARD CORNERS - OBJECT POINTS AND IMAGE POINTS #############################
 
@@ -89,8 +122,6 @@ criteria_stereo= (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 retStereo, newCameraMatrixL, distL, newCameraMatrixR, distR, rot, trans, essentialMatrix, fundamentalMatrix = cv.stereoCalibrate(objpoints, imgpointsL, imgpointsR, newCameraMatrixL, distL, newCameraMatrixR, distR, grayL.shape[::-1], criteria_stereo, flags)
 
 
-
-
 ########## Stereo Rectification #################################################
 
 rectifyScale= 1
@@ -98,6 +129,10 @@ rectL, rectR, projMatrixL, projMatrixR, Q, roi_L, roi_R= cv.stereoRectify(newCam
 
 stereoMapL = cv.initUndistortRectifyMap(newCameraMatrixL, distL, rectL, projMatrixL, grayL.shape[::-1], cv.CV_16SC2)
 stereoMapR = cv.initUndistortRectifyMap(newCameraMatrixR, distR, rectR, projMatrixR, grayR.shape[::-1], cv.CV_16SC2)
+
+''' Rectification mapping '''
+undistL, rectifL = cv.initUndistortRectifyMap(newCameraMatrixL, distL, rectL, projMatrixL, grayL.shape[::-1], cv.CV_32FC1)
+undistR, rectifR = cv.initUndistortRectifyMap(newCameraMatrixR, distR, rectR, projMatrixR, grayR.shape[::-1], cv.CV_32FC1)
 
 print("Saving parameters!")
 cv_file = cv.FileStorage('stereoMap.xml', cv.FILE_STORAGE_WRITE)
@@ -109,4 +144,4 @@ cv_file.write('stereoMapR_y',stereoMapR[1])
 
 cv_file.release()
 
-
+write_single_params()

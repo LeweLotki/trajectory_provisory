@@ -2,3 +2,4 @@ images/
 poetry.lock
 *.png
 *.jpg
+*.vim
