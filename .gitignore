@@ -1,2 +1,4 @@
 images/
 poetry.lock
+*.png
+*.jpg

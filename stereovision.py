@@ -11,16 +11,21 @@ stereoMapL_y = cv_file.getNode('stereoMapL_y').mat()
 stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
 stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
-
 # Open both cameras
-cap_right = cv2.VideoCapture(2, cv2.CAP_DSHOW)                    
-cap_left =  cv2.VideoCapture(0, cv2.CAP_DSHOW)
+cap =  cv2.VideoCapture(0)
 
+while cap.isOpened():
 
-while(cap_right.isOpened() and cap_left.isOpened()):
+    succes, frame = cap.read()
+    # succes_left, frame_left = cap_left.read()
 
-    succes_right, frame_right = cap_right.read()
-    succes_left, frame_left = cap_left.read()
+    size = frame.shape
+
+    frame_left = np.zeros((size[0], int(size[1] / 2), size[2]))
+    frame_right = np.zeros((size[0], int(size[1] / 2), size[2]))
+    frame_left = frame[:,:int(size[1]/2),:]
+    frame_right = frame[:,int(size[1]/2) :,:]
+
 
     # Undistort and rectify images
     frame_right = cv2.remap(frame_right, stereoMapR_x, stereoMapR_y, cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
@@ -37,7 +42,6 @@ while(cap_right.isOpened() and cap_left.isOpened()):
 
 
 # Release and destroy all windows before termination
-cap_right.release()
-cap_left.release()
+cap.release()
 
 cv2.destroyAllWindows()
