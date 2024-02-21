@@ -87,20 +87,32 @@ def compute_disparity(imgId, params):
     imgL = cv.imread(join(PATH_L, imgId))
     imgR = cv.imread(join(PATH_R, imgId))
     
-    # imgL = cv.remap(imgL, undistL, rectifL, cv.INTER_LINEAR)
-    # imgR = cv.remap(imgR, undistR, rectifR, cv.INTER_LINEAR)
-    
-    # imgL = rescaleROI(imgL, roiL)
-    # imgR = rescaleROI(imgR, roiR)
+    imgL = cv.remap(imgL, undistL, rectifL, cv.INTER_LINEAR)
+    imgR = cv.remap(imgR, undistR, rectifR, cv.INTER_LINEAR)
 
     # print(f'imgL: \n {imgL}')
     # print(f'imgR: \n {imgR}')
 
+    # cv.imshow('imgL',imgL)
+    # cv.imshow('imgR',imgR)
+
+    imgL = rescaleROI(imgL, roiL)
+    imgR = rescaleROI(imgR, roiR)
+
+    # print(f'imgL: \n {imgL}')
+    # print(f'imgR: \n {imgR}')
+
+    # cv.imshow('imgL',imgL)
+    # cv.imshow('imgR',imgR)
+
     if imgL.shape != imgR.shape:
         print('L.shape != R.shape: {} != {}'.format(imgL.shape, imgR.shape))
-        dsize = (imgL.shape[1], imgR.shape[0])
-        imgR = cv.resize(imgL, dsize, interpolation=cv.INTER_LINEAR)
-        
+        dsize = (imgL.shape[1], imgL.shape[0])
+        imgR = cv.resize(imgR, dsize, interpolation=cv.INTER_LINEAR)
+   
+    # print(f'imgL: \n {imgL}')
+    # print(f'imgR: \n {imgR}')
+    
     grayL = cv.cvtColor(imgL, cv.COLOR_BGR2GRAY)
     grayR = cv.cvtColor(imgR, cv.COLOR_BGR2GRAY)
 
@@ -127,6 +139,12 @@ def compute_disparity(imgId, params):
     
     ### Compute raw disparity from both sides
     ts1 = time.time()
+    grayL = grayL.astype(np.uint8)
+    grayR = grayR.astype(np.uint8)
+    # print(f'grayL shape: {grayL.shape}')
+    # print(f'grayR shape: {grayR.shape}')
+    # print(f'grayL type: {type(grayL)}')
+    # print(f'graRy type: {type(grayR)}')
     dispL = stereoL.compute(grayL, grayR)
     dispR = stereoR.compute(grayR, grayL)
     ts2 = time.time()
