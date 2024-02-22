@@ -327,7 +327,7 @@ def display_disparity(origImg, dispRaw, dispWLS, imgName, paramsVals):
     paramsText = 'Lambda={}; Sigma={}; nDisp={}; bSize={}; pfCap={}; sRange={}'.format(*paramsVals)
 
     fig, (ax1, ax2, ax3) = plt.subplots(figsize=(12, 4), ncols=3)
-    #fig.subplots_adjust(hspace=0.3)
+    #fig.subplots_adjust(hspace=0.33)
     plt.suptitle(imgName)
     plt.gcf().text(x=0.1, y=0.05, s=paramsText)
 
