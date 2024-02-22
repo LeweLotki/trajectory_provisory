@@ -68,6 +68,16 @@ for imgLeft, imgRight in zip(imagesLeft, imagesRight):
     imgR = cv.imread(imgRight)
     grayL = cv.cvtColor(imgL, cv.COLOR_BGR2GRAY)
     grayR = cv.cvtColor(imgR, cv.COLOR_BGR2GRAY)
+    
+    contrast_factor = 3
+    brightness_factor = 0.5
+
+    grayL = cv.convertScaleAbs(grayL, alpha=contrast_factor, beta=brightness_factor)
+    grayR = cv.convertScaleAbs(grayR, alpha=contrast_factor, beta=brightness_factor)
+
+    cv.imshow('img left', grayL)
+    cv.imshow('img right', grayR)
+    cv.waitKey(1000)
 
     # Find the chess board corners
     retL, cornersL = cv.findChessboardCorners(grayL, chessboardSize, None)

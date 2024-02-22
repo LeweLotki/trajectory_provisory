@@ -1,4 +1,5 @@
 from os.path import isfile, join
+from os import listdir
 import numpy as np
 import cv2 as cv
 from cv2 import ximgproc
@@ -56,7 +57,7 @@ DL = np.loadtxt(join(PATH_CALIB, 'DcL.txt'), dtype=np.float32)
 
 
 def main():
-    streamFrames = range(50, 105 + 1)
+    streamFrames = range(0, len(listdir(PATH_L)))
     imgPairId = '55.png'
 
     if not (isfile(join(PATH_L, imgPairId)) and isfile(join(PATH_R, imgPairId))):
@@ -71,7 +72,7 @@ def main():
         for frameId in streamFrames:
             fname = str(frameId) + '.png'
             compute_disparity(fname, params)
-            plt.pause(0.2)
+            plt.pause(0.01)
     else:
         compute_disparity(imgPairId, params)
         plt.show()
