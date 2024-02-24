@@ -5,6 +5,8 @@ from argparse import ArgumentParser
 from os import listdir
 from os.path import basename
 
+from stream.stream import Stream
+
 def main():
 
     parser = get_parser()
