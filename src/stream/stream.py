@@ -10,12 +10,14 @@ class Stream:
     output_dir = paths.stream_frames_path
     left_dir, right_dir = (None, None)
 
-    def __init__(self, stream_mode=False):
+    def __init__(self):
 
-        self.stream_mode = stream_mode
         self.cap = cv2.VideoCapture(0)
 
-    def run(self, mode:str='display_mode', output_dir=self.output_dir, frame_limit=int(1e3)):
+    def run(self, mode:str='display_mode', output_dir=None, frame_limit=int(1e3)):
+        
+        if output_dir is None:
+            output_dir = self.output_dir
 
         if mode == 'display_mode':
             self.__display_mode()
@@ -106,8 +108,11 @@ class Stream:
             self.cap.release()
             cv2.destroyAllWindows()
 
-    def __create_output_dir(self, path=self.output_dir):
-       
+    def __create_output_dir(self, path=None):
+      
+        if path is None:
+            path = self.output_dir
+
         if os.path.exists(path):
             rmtree(path)
 
