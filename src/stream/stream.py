@@ -56,6 +56,8 @@ class Stream:
             cv2.destroyAllWindows()
 
     def __display_mode(self):
+        
+        frame_saved = False
 
         try:
             while True:
@@ -66,9 +68,16 @@ class Stream:
                     self.frame_count += 1
 
                 self.__display_images(frame)
-
-                if cv2.waitKey(1) & 0xFF == ord('q'):
+                
+                key = cv2.waitKey(1) & 0xFF
+                if key == ord('q'):
                     break
+                elif key == ord('s'):
+                    if not frame_saved:
+                        self.__create_output_dir()
+                        frame_saved = True
+                    self.__save_images(frame)
+
         finally:
             self.cap.release()
             cv2.destroyAllWindows()
@@ -93,7 +102,9 @@ class Stream:
             cv2.destroyAllWindows()
 
     def __void_mode(self, frame_limit:int=int(1e3)):
-
+        
+        frame_saved = False
+        
         try:
             while frame_limit >= self.frame_count:
                 ret, frame = self.cap.read()
@@ -102,8 +113,15 @@ class Stream:
                 else:
                     self.frame_count += 1
 
-                if cv2.waitKey(1) & 0xFF == ord('q'):
+                key = cv2.waitKey(1) & 0xFF
+                if key == ord('q'):
                     break
+                elif key == ord('s'):
+                    if not frame_saved:
+                        self.__create_output_dir()
+                        frame_saved = True
+                    self.__save_images(frame)
+
         finally:
             self.cap.release()
             cv2.destroyAllWindows()
