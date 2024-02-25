@@ -1,6 +1,7 @@
 from config import paths
 
 from argparse import ArgumentParser
+import argparse
 
 from os import listdir
 from os.path import basename
@@ -46,11 +47,10 @@ def get_parser():
 
     stream_parser = parser.add_argument_group('Stream Mode')
     stream_parser.add_argument('-s', '--stream', action='store_true', help=stream_description_path)
-    
-    stream_parser.add_argument('--ss', type=int, default=1000, help="Subflag ss with optional integer")
-    stream_parser.add_argument('--ssd', type=int, default=1000, help="Subflag ssd with optional integer")
+    stream_parser.add_argument('--ssd', nargs='?', const=None, default=argparse.SUPPRESS, type=int, help="Subflag ssd with optional integer. Defaults to 1000 if not provided, or uses the provided value.")
+    stream_parser.add_argument('--ss', nargs='?', const=1000, default=argparse.SUPPRESS, type=int, help="Subflag ss with optional integer. Defaults to 1000 if not provided, or uses the provided value.")
     stream_parser.add_argument('--sd', action='store_true', help="Subflag sd, a boolean flag")
-    stream_parser.add_argument('--sv', type=int, default=1000, help="Subflag sv with optional integer")
+    stream_parser.add_argument('--sv', nargs='?', const=1000, default=argparse.SUPPRESS, type=int, help="Subflag sv with optional integer. Defaults to 1000 if not provided, or uses the provided value.")
 
     stereo_parser = parser.add_argument_group('Stereo Mode')
     stereo_parser.add_argument('-d', '--stereo', action='store_true', help=stereo_description_path)
@@ -68,17 +68,13 @@ def select_mode(parser):
     elif args.stream:
         stream = Stream()
 
-        if hasattr(args, 'ssd') and args.ssd != 1000: 
-            print('ssd mode with value:', args.ssd)
-            stream.run(mode='save_display_mode')
-        elif hasattr(args, 'ss') and args.ss != 1000:
-            print('ss mode with value:', args.ss)
-            stream.run(mode='save_mode')
-        elif hasattr(args, 'sv') and args.sv != 1000:
-            print('sv mode with value:', args.sv)
-            stream.run(mode='void_mode')
+        if hasattr(args, 'ssd'): 
+            stream.run(mode='save_display_mode', frame_limit=args.ssd)
+        elif hasattr(args, 'ss'):
+            stream.run(mode='save_mode', frame_limit=args.ss)
+        elif hasattr(args, 'sv'):
+            stream.run(mode='void_mode', frame_limit=args.sv)
         elif args.sd:
-            print('sd mode')
             stream.run(mode='display_mode')
         else:
             stream.run()
